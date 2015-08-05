@@ -38,6 +38,23 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(function(req, res, next) {
+  var accesoActual = Date.now(); 
+
+  if ((req.session.accesoAnterior) &&
+      (req.session.user) &&
+      (accesoActual - req.session.accesoAnterior > 120000))
+  {
+    delete req.session.accesoAnterior; 
+    res.redirect('/logout');
+  }
+  else {
+    req.session.accesoAnterior = accesoActual;
+    next();
+  }
+});
+
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler
