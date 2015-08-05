@@ -119,3 +119,32 @@ exports.destroy = function(req, res) {
     res.redirect('/quizes');
   }).catch(function(error){next(error)});
 };
+
+// GET /quizes/statistics
+
+exports.statistics = function(req, res) {
+
+  var statistics = {totalQuizes:0,
+                    totalComments:0,
+                    avgCommentsQuiz:0,
+                    numQuizesSinComments:0,
+                    numQuizesConComments:0};
+
+  models.Quiz.count().then(function(countQuizes) {
+    statistics.totalQuizes = countQuizes;
+    models.Comment.count().then(function(countComments) {
+      statistics.totalComments = countComments;
+      statistics.avgCommentsQuiz = 
+                 (statistics.totalComments/statistics.totalQuizes).toFixed(2);
+      models.Quiz.count({include: [{ model: models.Comment, required:true }],
+                         distinct: true})
+      .then(function(countConComments) {
+        statistics.numQuizesConComments = countConComments;
+        statistics.numQuizesSinComments = statistics.totalQuizes - countConComments;
+        res.render('quizes/statistics', {statistics: statistics, errors: []});
+      })
+    })
+  })
+
+};
+

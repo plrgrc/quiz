@@ -40,4 +40,6 @@ router.post('/quizes/:quizId(\\d+)/comments', commentController.create);
 router.get('/quizes/:quizId(\\d+)/comments/:commentId(\\d+)/publish', 
              sessionController.loginRequired, commentController.publish);
 
+router.get('/quizes/statistics', quizController.statistics);
+
 module.exports = router;
